@@ -1,0 +1,28 @@
+{
+    "name": "apache_log_riak",
+    "type": "library",
+    "description": "Read apache logs into a riak bucket",
+    "homepage": "https://github.com/TriKaspar/apache_log_riak",
+    "version": "1.0",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Kaspar Bach Pedersen",
+            "email": "kasparp@me.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/TriKaspar/apache_log_riak/issues"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "require": {
+        "php": ">=5.4.1",
+        "symfony/yaml": "v2.3.0"
+    },
+    "autoload": {
+        "psr-0": { "ApacheLogRiak": "" }
+    }
+}

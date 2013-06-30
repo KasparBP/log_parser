@@ -1,0 +1,14 @@
+---
+status_file: /tmp/logstatus_test.json
+input:
+  directory: ./tests/data
+  logs:
+    - type: access
+      mask: '*-access.log*'
+      bucket: phpriak_log_access
+    - type: error
+      mask: '*-error.log*'
+      bucket: phpriak_log_error
+riak:
+  host: 127.0.0.1
+  port: 8087
