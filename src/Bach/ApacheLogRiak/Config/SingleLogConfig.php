@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-namespace ApacheLogRiak\Config;
+namespace Bach\ApacheLogRiak\Config;
 
 
 class SingleLogConfig

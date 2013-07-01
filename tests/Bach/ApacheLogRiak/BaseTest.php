@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-namespace ApacheLogRiak;
+namespace Bach\ApacheLogRiak;
 
 abstract class BaseTest  extends \PHPUnit_Framework_TestCase
 {

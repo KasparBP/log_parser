@@ -14,30 +14,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace ApacheLogRiak;
+namespace Bach\ApacheLogRiak;
 
-use ApacheLogRiak\Config\Config;
-use Riak\Connection;
+class LogReaderTest extends BaseTest
+{
 
-class LogReader {
-
-    private $connection;
-    private $config;
-
-    /**
-     * @param Config $config
-     */
-    public function __construct($config)
+    public function testConstruction()
     {
-        $this->config = $config;
-        $this->connection = new Connection($config->riakHost, $config->riakPort);
-    }
-
-    public function processLogs()
-    {
-        foreach ($this->config->logs as $log) {
-            //
-        }
+        $reader = new LogReader($this->config);
     }
 
 }

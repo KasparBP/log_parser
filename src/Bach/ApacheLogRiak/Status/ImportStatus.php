@@ -15,14 +15,14 @@
    limitations under the License.
 */
 
-namespace ApacheLogRiak\Status;
+namespace Bach\ApacheLogRiak\Status;
 
-use ApacheLogRiak\Config\Config;
+use \Bach\ApacheLogRiak\Config\Config;
 
 class ImportStatus
 {
     /**
-     * @var \ApacheLogRiak\Config\Config
+     * @var Config
      */
     private $config;
 
@@ -62,13 +62,37 @@ class ImportStatus
         }
     }
 
-    public function setLastImportTime($type, \DateTime $time)
+    /**
+     * @param string $type
+     * @return Entry
+     */
+    private function getEntryFor($type)
     {
-        //
+        $entry = $this->status[$type];
+        if (is_null($entry)) {
+            $entry = new Entry();
+        }
+        return $entry;
     }
 
+    /**
+     * @param string $type
+     * @param \DateTime $time
+     */
+    public function setLastImportTime($type, \DateTime $time)
+    {
+        $entry = $this->getEntryFor($type);
+        $entry->latestImportTime = $time;
+        $this->saveStatus($this->config->statusFile);
+    }
+
+    /**
+     * @param $type
+     * @return \DateTime|null
+     */
     public function getLastImportTime($type)
     {
-        //
+        $entry = $this->getEntryFor($type);
+        return $entry->latestImportTime;
     }
 }

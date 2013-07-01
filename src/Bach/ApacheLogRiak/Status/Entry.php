@@ -14,14 +14,18 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace ApacheLogRiak;
 
-class LogReaderTest extends BaseTest
+namespace Bach\ApacheLogRiak\Status;
+
+class Entry
 {
+    /**
+     * @var int
+     */
+    public $totalLinesRead = 0;
 
-    public function testConstruction()
-    {
-        $reader = new LogReader($this->config);
-    }
-
+    /**
+     * @var null|\DateTime
+     */
+    public $latestImportTime = null;
 }
