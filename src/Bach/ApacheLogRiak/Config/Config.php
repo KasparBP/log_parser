@@ -26,7 +26,7 @@ class Config
     public $logDirectory;
 
     /**
-     * @var array
+     * @var SingleLogConfig[]
      */
     public $logs = array();
 

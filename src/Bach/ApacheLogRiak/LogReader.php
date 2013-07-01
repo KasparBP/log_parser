@@ -16,13 +16,23 @@
 */
 namespace Bach\ApacheLogRiak;
 
-use Bach\ApacheLogRiak\Config\Config;
+use \Bach\ApacheLogRiak\Config\Config;
+use \Bach\ApacheLogRiak\Config\SingleLogConfig;
+use Bach\ApacheLogRiak\Status\ImportStatus;
 use \Riak\Connection;
 
 class LogReader {
 
     private $connection;
+    /**
+     * @var Config
+     */
     private $config;
+
+    /**
+     * @var Status\ImportStatus
+     */
+    private $importStatus;
 
     /**
      * @param Config $config
@@ -30,14 +40,55 @@ class LogReader {
     public function __construct($config)
     {
         $this->config = $config;
+        $this->importStatus = new ImportStatus($config);
         $this->connection = new Connection($config->riakHost, $config->riakPort);
     }
 
     public function processLogs()
     {
         foreach ($this->config->logs as $log) {
-            //
+            $this->processLogGroup($log);
         }
+    }
+
+    private function processLogGroup(SingleLogConfig $logConfig)
+    {
+        $lastLogTime = $this->importStatus->getLastImportTime($logConfig->logtype);
+        $lastLogTimeForThisRun = $lastLogTime;
+        foreach (glob($logConfig->filemask) as $logFilename) {
+            // Find last modified time of this log file
+            $lastModified = new \DateTime();
+            $lastModifiedTimestamp = filemtime($logFilename);
+            if ($lastModifiedTimestamp !== false) {
+                $lastModified->setTimestamp($lastModifiedTimestamp);
+            } else {
+                $lastModified->setTimestamp(0);
+            }
+            // Check if the file has been modified since last run
+            if (is_null($lastLogTime) || $lastModified >= $lastLogTime) {
+                // Ok this log file has been modified since last run, now read it.
+                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig->bucket, $lastLogTime);
+                if (isset($logFileLastProcessed)) {
+                    if (is_null($lastLogTimeForThisRun) || $logFileLastProcessed > $lastLogTimeForThisRun) {
+                        $lastLogTimeForThisRun = $logFileLastProcessed;
+                    }
+                }
+            }
+        }
+        // Save what date we got to in this run.
+        $this->importStatus->setLastImportTime($logConfig->logtype, $lastLogTimeForThisRun);
+    }
+
+    /**
+     * Process a single log file and return datetime of the last log line processed
+     * @param $logFilename
+     * @param $bucketName
+     * @param \DateTime|null $lastLogTime
+     * @return \DateTime
+     */
+    private function processSingleLogFile($logFilename, $bucketName, $lastLogTime)
+    {
+
     }
 
 }

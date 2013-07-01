@@ -23,6 +23,6 @@
         "symfony/yaml": "v2.3.0"
     },
     "autoload": {
-        "psr-0": { "ApacheLogRiak": "" }
+        "psr-0": { "Bach\\ApacheLogRiak": "src/" }
     }
 }

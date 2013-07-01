@@ -17,12 +17,13 @@
 
 namespace Bach\ApacheLogRiak;
 
+use \Bach\ApacheLogRiak\Config\Config;
+
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoadConfigFile()
     {
-        $cfg = new Config\Config();
+        $cfg = new Config();
         $cfg->loadFromYaml(dirname(__FILE__).DIRECTORY_SEPARATOR."testconfig.yml");
-
     }
 }
