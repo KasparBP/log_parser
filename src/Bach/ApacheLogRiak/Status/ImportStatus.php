@@ -77,9 +77,9 @@ class ImportStatus
 
     /**
      * @param string $type
-     * @param \DateTime $time
+     * @param \DateTime|null $time
      */
-    public function setLastImportTime($type, \DateTime $time)
+    public function setLastImportTime($type, $time)
     {
         $entry = $this->getEntryFor($type);
         $entry->latestImportTime = $time;

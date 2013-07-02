@@ -56,7 +56,9 @@ class Reader
     {
         $lastLogTime = $this->importStatus->getLastImportTime($logConfig->getLogtype());
         $lastLogTimeForThisRun = $lastLogTime;
-        foreach (glob($logConfig->getFilemask()) as $logFilename) {
+        $logDir = $this->config->logDirectory;
+        echo $logDir.EOL;
+        foreach (glob($logDir . DIRECTORY_SEPARATOR . $logConfig->getFilemask()) as $logFilename) {
             // Find last modified time of this log file
             $lastModified = new \DateTime();
             $lastModifiedTimestamp = filemtime($logFilename);
@@ -68,7 +70,7 @@ class Reader
             // Check if the file has been modified since last run
             if (is_null($lastLogTime) || $lastModified >= $lastLogTime) {
                 // Ok this log file has been modified since last run, now read it.
-                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig->getBucket(), $lastLogTime);
+                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig, $lastLogTime);
                 if (isset($logFileLastProcessed)) {
                     if (is_null($lastLogTimeForThisRun) || $logFileLastProcessed > $lastLogTimeForThisRun) {
                         $lastLogTimeForThisRun = $logFileLastProcessed;
@@ -83,18 +85,20 @@ class Reader
     /**
      * Process a single log file and return datetime of the last log line processed
      * @param $logFilename
-     * @param $bucketName
+     * @param SingleLogConfig $logConfig
      * @param \DateTime|null $lastLogTime
      * @return \DateTime
      */
-    private function processSingleLogFile($logFilename, $bucketName, $lastLogTime)
+    private function processSingleLogFile($logFilename, $logConfig, $lastLogTime)
     {
         $lastLogTimeRead = new \DateTime();
         $lastLogTimeRead->setTimestamp(0);
         $handle = @fopen($logFilename, "r");
         if ($handle) {
+            $lineFormat = $logConfig->getFormat();
             while (($buffer = fgets($handle)) !== false) {
-                //$logLine = new Line($buffer);
+                $logLine = new Line($buffer, $lineFormat);
+                var_dump($logLine);
             }
         }
         return $lastLogTimeRead;

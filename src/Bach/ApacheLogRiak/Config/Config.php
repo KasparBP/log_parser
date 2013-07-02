@@ -57,11 +57,7 @@ class Config
         $this->logDirectory = $value['input']['directory'];
         $this->logs = array();
         foreach ($value['input']['logs'] as $log) {
-            $scnf = new SingleLogConfig($log);
-            $scnf->logtype = $log['type'];
-            $scnf->filemask = $log['mask'];
-            $scnf->bucket = $log['bucket'];
-            $this->logs[] = $scnf;
+            $this->logs[] = new SingleLogConfig($log);
         }
         $this->riakHost = $value['riak']['host'];
         $this->riakPort = intval($value['riak']['port']);

@@ -19,9 +19,10 @@ namespace Bach\ApacheLogRiak;
 class ReaderTest extends BaseTest
 {
 
-    public function testConstruction()
+    public function testFullRead()
     {
         $reader = new Reader($this->config);
+        $reader->processLogs();
     }
 
 }

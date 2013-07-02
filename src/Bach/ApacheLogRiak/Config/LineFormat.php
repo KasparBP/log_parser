@@ -20,8 +20,39 @@ namespace Bach\ApacheLogRiak\Config;
 
 class LineFormat
 {
+    /**
+     * @var string
+     */
+    private $formatRegex;
+
+    /**
+     * @var string[]
+     */
+    private $fieldNames;
+
     public function __construct($formatSpecs)
     {
-        var_dump($formatSpecs);
+        $regex = $formatSpecs['regex'];
+        if (substr($regex, 0, 6) == "!!str ") {
+            $regex = substr($regex, 6);
+        }
+        $this->formatRegex = $regex;
+        $this->fieldNames = $formatSpecs['field_names'];
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getFieldNames()
+    {
+        return $this->fieldNames;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormatRegex()
+    {
+        return $this->formatRegex;
     }
 }

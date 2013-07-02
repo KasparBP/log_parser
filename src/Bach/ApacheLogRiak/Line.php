@@ -16,6 +16,7 @@
 */
 
 namespace Bach\ApacheLogRiak;
+use Bach\ApacheLogRiak\Config\LineFormat;
 
 /**
  * Class LogLine
@@ -25,10 +26,10 @@ class Line
 {
     /**
      * @param string $line
-     * @param $format
+     * @param LineFormat $format
      */
     public function __construct($line, $format)
     {
-
+        //
     }
 }

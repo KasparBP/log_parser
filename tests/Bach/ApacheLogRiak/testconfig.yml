@@ -1,14 +1,15 @@
 ---
-format &apache_access:
+format: &apache_access
   regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"]*" \d+ \d+ "[^"]*" "([^"]*)"$/
   field_names:
     - ip
     - date
     - method
     - user_agent
+
 status_file: /tmp/logstatus_test.json
 input:
-  directory: ./tests/data
+  directory: ./Bach/ApacheLogRiak/data
   logs:
     - type: access
       mask: '*-access.log*'
