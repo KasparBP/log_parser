@@ -17,23 +17,73 @@
 
 namespace Bach\ApacheLogRiak\Config;
 
-
+/**
+ * Class SingleLogConfig
+ * @package Bach\ApacheLogRiak\Config
+ */
 class SingleLogConfig
 {
+    /**
+     * @var string
+     */
+    private $logtype;
 
     /**
      * @var string
      */
-    public $logtype;
+    private $filemask;
 
     /**
      * @var string
      */
-    public $filemask;
+    private $bucket;
 
     /**
-     * @var string
+     * @var LineFormat
      */
-    public $bucket;
+    private $format;
+
+    /** This logs config array
+     * @param array $logConfigEntry
+     */
+    public function __construct($logConfigEntry)
+    {
+        $this->logtype = $logConfigEntry['type'];
+        $this->filemask = $logConfigEntry['mask'];
+        $this->bucket = $logConfigEntry['bucket'];
+        $this->format = new LineFormat($logConfigEntry['line_format']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBucket()
+    {
+        return $this->bucket;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilemask()
+    {
+        return $this->filemask;
+    }
+
+    /**
+     * @return \Bach\ApacheLogRiak\Config\LineFormat
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogtype()
+    {
+        return $this->logtype;
+    }
 
 }

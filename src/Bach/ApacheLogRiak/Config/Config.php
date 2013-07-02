@@ -53,10 +53,11 @@ class Config
         $parser = new Parser();
         $value = $parser->parse(file_get_contents($filepath));
         $this->statusFile = $value['status_file'];
+
         $this->logDirectory = $value['input']['directory'];
         $this->logs = array();
         foreach ($value['input']['logs'] as $log) {
-            $scnf = new SingleLogConfig();
+            $scnf = new SingleLogConfig($log);
             $scnf->logtype = $log['type'];
             $scnf->filemask = $log['mask'];
             $scnf->bucket = $log['bucket'];

@@ -1,4 +1,11 @@
 ---
+format &apache_access:
+  regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"]*" \d+ \d+ "[^"]*" "([^"]*)"$/
+  field_names:
+    - ip
+    - date
+    - method
+    - user_agent
 status_file: /tmp/logstatus_test.json
 input:
   directory: ./tests/data
@@ -6,6 +13,7 @@ input:
     - type: access
       mask: '*-access.log*'
       bucket: phpriak_log_access
+      line_format: *apache_access
     - type: error
       mask: '*-error.log*'
       bucket: phpriak_log_error

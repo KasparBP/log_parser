@@ -21,7 +21,8 @@ use \Bach\ApacheLogRiak\Config\SingleLogConfig;
 use Bach\ApacheLogRiak\Status\ImportStatus;
 use \Riak\Connection;
 
-class LogReader {
+class Reader
+{
 
     private $connection;
     /**
@@ -53,9 +54,9 @@ class LogReader {
 
     private function processLogGroup(SingleLogConfig $logConfig)
     {
-        $lastLogTime = $this->importStatus->getLastImportTime($logConfig->logtype);
+        $lastLogTime = $this->importStatus->getLastImportTime($logConfig->getLogtype());
         $lastLogTimeForThisRun = $lastLogTime;
-        foreach (glob($logConfig->filemask) as $logFilename) {
+        foreach (glob($logConfig->getFilemask()) as $logFilename) {
             // Find last modified time of this log file
             $lastModified = new \DateTime();
             $lastModifiedTimestamp = filemtime($logFilename);
@@ -67,7 +68,7 @@ class LogReader {
             // Check if the file has been modified since last run
             if (is_null($lastLogTime) || $lastModified >= $lastLogTime) {
                 // Ok this log file has been modified since last run, now read it.
-                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig->bucket, $lastLogTime);
+                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig->getBucket(), $lastLogTime);
                 if (isset($logFileLastProcessed)) {
                     if (is_null($lastLogTimeForThisRun) || $logFileLastProcessed > $lastLogTimeForThisRun) {
                         $lastLogTimeForThisRun = $logFileLastProcessed;
@@ -76,7 +77,7 @@ class LogReader {
             }
         }
         // Save what date we got to in this run.
-        $this->importStatus->setLastImportTime($logConfig->logtype, $lastLogTimeForThisRun);
+        $this->importStatus->setLastImportTime($logConfig->getLogtype(), $lastLogTimeForThisRun);
     }
 
     /**
@@ -88,7 +89,16 @@ class LogReader {
      */
     private function processSingleLogFile($logFilename, $bucketName, $lastLogTime)
     {
-
+        $lastLogTimeRead = new \DateTime();
+        $lastLogTimeRead->setTimestamp(0);
+        $handle = @fopen($logFilename, "r");
+        if ($handle) {
+            while (($buffer = fgets($handle)) !== false) {
+                //$logLine = new Line($buffer);
+            }
+        }
+        return $lastLogTimeRead;
     }
+
 
 }

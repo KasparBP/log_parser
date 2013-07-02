@@ -14,14 +14,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
 namespace Bach\ApacheLogRiak;
 
-class LogReaderTest extends BaseTest
+/**
+ * Class LogLine
+ * @package Bach\ApacheLogRiak
+ */
+class Line
 {
-
-    public function testConstruction()
+    /**
+     * @param string $line
+     * @param $format
+     */
+    public function __construct($line, $format)
     {
-        $reader = new LogReader($this->config);
-    }
 
+    }
 }
