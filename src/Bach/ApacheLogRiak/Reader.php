@@ -94,12 +94,14 @@ class Reader
         $lastLogTimeRead = new \DateTime();
         $lastLogTimeRead->setTimestamp(0);
         $handle = @fopen($logFilename, "r");
+        $i = 0;
         if ($handle) {
             $lineFormat = $logConfig->getFormat();
             $line = new Line($lineFormat);
             while (($buffer = fgets($handle)) !== false) {
                 $parsedData = $line->parse($buffer);
                 var_dump($parsedData);
+                if ($i++>10) break;
             }
         }
         return $lastLogTimeRead;

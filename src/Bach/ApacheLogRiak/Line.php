@@ -43,12 +43,14 @@ class Line
      */
     public function parse($lineData)
     {
-        $matches = array();
-        $matchCount = preg_match_all($this->format, $lineData, $matches);
-        if ($matchCount === false || $matchCount < 1) {
-            return null;
-        } else {
-            return array();
+        if (strlen($lineData) > 0) {
+            $matches = array();
+            echo "$lineData".PHP_EOL;
+            $matchCount = preg_match_all($this->format->getFormatRegex(), $lineData, $matches);
+            if ($matchCount !== false && $matchCount > 0) {
+                return $matches;
+            }
         }
+        return null;
     }
 }

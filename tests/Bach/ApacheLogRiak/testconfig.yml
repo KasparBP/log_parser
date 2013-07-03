@@ -15,9 +15,9 @@ input:
       mask: '*-access.log*'
       bucket: phpriak_log_access
       line_format: *apache_access
-    - type: error
-      mask: '*-error.log*'
-      bucket: phpriak_log_error
+#    - type: error
+#      mask: '*-error.log*'
+#      bucket: phpriak_log_error
 riak:
   host: 127.0.0.1
   port: 8087
