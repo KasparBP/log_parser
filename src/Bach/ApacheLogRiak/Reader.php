@@ -96,9 +96,10 @@ class Reader
         $handle = @fopen($logFilename, "r");
         if ($handle) {
             $lineFormat = $logConfig->getFormat();
+            $line = new Line($lineFormat);
             while (($buffer = fgets($handle)) !== false) {
-                $logLine = new Line($buffer, $lineFormat);
-                var_dump($logLine);
+                $parsedData = $line->parse($buffer);
+                var_dump($parsedData);
             }
         }
         return $lastLogTimeRead;

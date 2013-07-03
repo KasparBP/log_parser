@@ -25,11 +25,30 @@ use Bach\ApacheLogRiak\Config\LineFormat;
 class Line
 {
     /**
-     * @param string $line
+     * @var Config\LineFormat
+     */
+    private $format;
+
+    /**
      * @param LineFormat $format
      */
-    public function __construct($line, $format)
+    public function __construct($format)
     {
-        //
+        $this->format = $format;
+    }
+
+    /**
+     * @param string $lineData
+     * @return array|null
+     */
+    public function parse($lineData)
+    {
+        $matches = array();
+        $matchCount = preg_match_all($this->format, $lineData, $matches);
+        if ($matchCount === false || $matchCount < 1) {
+            return null;
+        } else {
+            return array();
+        }
     }
 }
