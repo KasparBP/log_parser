@@ -26,9 +26,9 @@ class LineFormat
     private $formatRegex;
 
     /**
-     * @var string[]
+     * @var Field[]
      */
-    private $fieldNames;
+    private $fields;
 
     public function __construct($formatSpecs)
     {
@@ -37,15 +37,18 @@ class LineFormat
             $regex = substr($regex, 6);
         }
         $this->formatRegex = $regex;
-        $this->fieldNames = $formatSpecs['field_names'];
+        $this->fields = array();
+        foreach ($formatSpecs['fields'] as $fieldCfg) {
+            $this->fields[] = new Field($fieldCfg);
+        }
     }
 
     /**
-     * @return \string[]
+     * @return Field[]
      */
-    public function getFieldNames()
+    public function getFields()
     {
-        return $this->fieldNames;
+        return $this->fields;
     }
 
     /**

@@ -1,14 +1,21 @@
 ---
 format: &apache_access
-  regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"]*" (\d+) \d+ "([^"]*)" "([^"]*)"$/
-  field_names:
-    - ip
-    - date
-    - method
-    - code
-    - url
-    - agent
+  regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"](\S+) \S+" (\d+) (\S+) "([^"]*)" "([^"]*)"$/
+  fields:
+    - name: ip
+    - name: date
+      type: date
+      format: d/M/Y:H:i:s e
+    - name: method
+    - name: path
+    - name: code
+      type: int
+    - name: size
+      type: int
+    - name: referer
+    - name: agent
 
+#87.104.173.199 - - [09/Jun/2013:03:19:37 -0400] "GET /css/phpriak.css HTTP/1.1" 304 - "http://phpriak.bachpedersen.dk/examples/bucket_properties" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"
 status_file: /tmp/logstatus_test.json
 input:
   directory: ./Bach/ApacheLogRiak/data

@@ -16,6 +16,7 @@
 */
 
 namespace Bach\ApacheLogRiak;
+use Bach\ApacheLogRiak\Config\Field;
 use Bach\ApacheLogRiak\Config\LineFormat;
 
 /**
@@ -45,20 +46,30 @@ class Line
     {
         if (strlen($lineData) > 0) {
             $unknownCnt = 0;
-            $fieldNames = $this->format->getFieldNames();
+            $fields = $this->format->getFields();
             $matches = array();
             echo "$lineData".PHP_EOL;
             $matchCount = preg_match_all($this->format->getFormatRegex(), $lineData, $matches);
             if ($matchCount !== false && $matchCount > 0 && count($matches) > 1) {
                 $result = array();
+                // Loop through all found matches
                 for ($i=1; $i<count($matches); $i++) {
-                    if (count($fieldNames) > $i) {
-                        $name = $fieldNames[$i-1];
+                    // Do we gave a field descriptor from config
+                    if (count($fields) >= $i) {
+                        // Yes, then get the name and parse the value
+                        $name = $fields[$i-1]->getName();
+                        if (isset($matches[$i][0])) {
+                            $value = $this->parseField($fields[$i-1], $matches[$i][0]);
+                        } else {
+                            $value = null;
+                        }
                     } else {
+                        // There was no descriptor for this field, make an unknown entry
                         $name = "unknown$unknownCnt";
+                        $value = $matches[$i];
                         $unknownCnt++;
                     }
-                    $result[$name] = $matches[$i];
+                    $result[$name] = $value;
                 }
                 return $result;
             } else {
@@ -66,5 +77,36 @@ class Line
             }
         }
         return null;
+    }
+
+    /**
+     * @param Field $field
+     * @param string $value
+     * @return mixed
+     */
+    private function parseField(Field $field, $value)
+    {
+        $type = $field->getType();
+        switch ($type) {
+            case Field::$FIELD_TYPE_STRING:
+                return $value;
+            case Field::$FIELD_TYPE_INT:
+                return intval($value);
+            case Field::$FIELD_TYPE_DATE:
+                $format = $field->getFormat();
+                if (isset($format)) {
+                    $result = \DateTime::createFromFormat($format, $value);
+                } else {
+                    $result = new \DateTime($value);
+                }
+                if ($result !== false) {
+                    return $result;
+                } else {
+                    // TODO Log error
+                    return null;
+                }
+            default:
+                return $value;
+        }
     }
 }
