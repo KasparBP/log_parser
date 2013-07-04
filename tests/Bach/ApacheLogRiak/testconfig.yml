@@ -1,11 +1,13 @@
 ---
 format: &apache_access
-  regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"]*" \d+ \d+ "[^"]*" "([^"]*)"$/
+  regex: !!str /^(\S+) \S+ \S+ \[([^\]]+)\] "([A-Z]+)[^"]*" (\d+) \d+ "([^"]*)" "([^"]*)"$/
   field_names:
     - ip
     - date
     - method
-    - user_agent
+    - code
+    - url
+    - agent
 
 status_file: /tmp/logstatus_test.json
 input:

@@ -44,11 +44,25 @@ class Line
     public function parse($lineData)
     {
         if (strlen($lineData) > 0) {
+            $unknownCnt = 0;
+            $fieldNames = $this->format->getFieldNames();
             $matches = array();
             echo "$lineData".PHP_EOL;
             $matchCount = preg_match_all($this->format->getFormatRegex(), $lineData, $matches);
-            if ($matchCount !== false && $matchCount > 0) {
-                return $matches;
+            if ($matchCount !== false && $matchCount > 0 && count($matches) > 1) {
+                $result = array();
+                for ($i=1; $i<count($matches); $i++) {
+                    if (count($fieldNames) > $i) {
+                        $name = $fieldNames[$i-1];
+                    } else {
+                        $name = "unknown$unknownCnt";
+                        $unknownCnt++;
+                    }
+                    $result[$name] = $matches[$i];
+                }
+                return $result;
+            } else {
+                // TODO Log error
             }
         }
         return null;
