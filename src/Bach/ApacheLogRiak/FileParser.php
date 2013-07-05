@@ -16,15 +16,13 @@
 */
 namespace Bach\ApacheLogRiak;
 
-use \Bach\ApacheLogRiak\Config\Config;
-use \Bach\ApacheLogRiak\Config\SingleLogConfig;
+use Bach\ApacheLogRiak\Config\Config;
+use Bach\ApacheLogRiak\Config\SingleLogConfig;
 use Bach\ApacheLogRiak\Status\ImportStatus;
-use \Riak\Connection;
+use Bach\ApacheLogRiak\Store\LogWriter;
 
-class Reader
+class FileParser
 {
-
-    private $connection;
     /**
      * @var Config
      */
@@ -36,13 +34,19 @@ class Reader
     private $importStatus;
 
     /**
-     * @param Config $config
+     * @var LogWriter
      */
-    public function __construct($config)
+    private $writer;
+
+    /**
+     * @param Config $config
+     * @param LogWriter $writer
+     */
+    public function __construct($config, $writer)
     {
         $this->config = $config;
         $this->importStatus = new ImportStatus($config);
-        $this->connection = new Connection($config->riakHost, $config->riakPort);
+        $this->writer = $writer;
     }
 
     public function processLogs()
@@ -97,15 +101,43 @@ class Reader
         $i = 0;
         if ($handle) {
             $lineFormat = $logConfig->getFormat();
-            $line = new Line($lineFormat);
+            $bucket = $logConfig->getBucket();
+            $line = new LineParser($lineFormat);
             while (($buffer = fgets($handle)) !== false) {
                 $parsedData = $line->parse($buffer);
-                var_dump($parsedData);
+                $key = $this->makeKeyFromParsedLine($buffer, $parsedData);
+                $this->writer->write($bucket, $key, $parsedData);
                 if ($i++>10) break;
             }
         }
         return $lastLogTimeRead;
     }
 
+    /**
+     * @param string $rawLine
+     * @param array $lineData
+     * @return string
+     */
+    private function makeKeyFromParsedLine($rawLine, $lineData)
+    {
+        // Just find the first date time and use that for key
+        // TODO Improve this
+        $keyTime = new \DateTime();
+        $found = false;
+        foreach ($lineData as $item) {
+            if ($item instanceof \DateTime) {
+                $keyTime = $item;
+                $found = true;
+                break;
+            }
+        }
+        $md5 = md5($rawLine);
+        $shortenedMd5 = substr($md5, 0, 6);
+        $stamp = $keyTime->getTimestamp();
+        if (!$found) {
+            echo "Did not find any log time in records, using now for line: '$lineData''".PHP_EOL;
+        }
+        return "$stamp-$shortenedMd5";
+    }
 
 }

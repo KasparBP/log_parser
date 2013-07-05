@@ -18,7 +18,7 @@ format: &apache_access
 #87.104.173.199 - - [09/Jun/2013:03:19:37 -0400] "GET /css/phpriak.css HTTP/1.1" 304 - "http://phpriak.bachpedersen.dk/examples/bucket_properties" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0"
 status_file: /tmp/logstatus_test.json
 input:
-  directory: ./Bach/ApacheLogRiak/data
+  directory: ./Bach/ApacheLogRiak/Data
   logs:
     - type: access
       mask: '*-access.log*'

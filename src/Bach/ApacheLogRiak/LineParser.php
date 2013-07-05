@@ -23,7 +23,7 @@ use Bach\ApacheLogRiak\Config\LineFormat;
  * Class LogLine
  * @package Bach\ApacheLogRiak
  */
-class Line
+class LineParser
 {
     /**
      * @var Config\LineFormat

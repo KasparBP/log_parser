@@ -14,15 +14,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace Bach\ApacheLogRiak;
 
-class ReaderTest extends BaseTest
+namespace Bach\ApacheLogRiak\Store;
+
+
+class MemoryLogWriter implements LogWriter
 {
 
-    public function testFullRead()
+    public function write($bucket, $key, $data)
     {
-        $reader = new Reader($this->config);
-        $reader->processLogs();
+        // TODO: Implement write() method.
     }
-
 }
