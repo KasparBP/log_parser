@@ -20,9 +20,13 @@
     },
     "require": {
         "php": ">=5.4.1",
-        "symfony/yaml": "v2.3.0"
+        "symfony/yaml": "v2.3.0",
+        "symfony/console": "v2.3.5"
     },
     "autoload": {
-        "psr-0": { "Bach\\ApacheLogRiak": "src/" }
+        "psr-0": {
+            "Bach\\ApacheLogRiak": "src/",
+            "Bach": "tests/"
+        }
     }
 }

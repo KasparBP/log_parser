@@ -20,5 +20,11 @@ namespace Bach\ApacheLogRiak\Store;
 
 interface LogWriter
 {
+    /**
+     * @param $bucket string
+     * @param $key string
+     * @param $data array
+     * @return void
+     */
     public function write($bucket, $key, $data);
 }

@@ -42,7 +42,7 @@ class RiakLogWriter implements LogWriter
         $bucket = $this->connection->getBucket($bucketName);
         $obj = new Object($key);
         $obj->setContentType('application/json');
-        $obj->setContent($data);
+        $obj->setContent(json_encode($data));
 
         $done = false;
         while (!$done) {
@@ -55,7 +55,6 @@ class RiakLogWriter implements LogWriter
                 if (--$retries <= 0) {
                     break;
                 }
-                echo "Retrying".PHP_EOL;
             }
         }
     }

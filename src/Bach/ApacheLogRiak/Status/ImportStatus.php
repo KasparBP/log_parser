@@ -68,9 +68,10 @@ class ImportStatus
      */
     private function getEntryFor($type)
     {
-        $entry = $this->status[$type];
-        if (is_null($entry)) {
+        if (!isset($this->status[$type])) {
             $entry = new Entry();
+        } else {
+            $entry = $this->status[$type];
         }
         return $entry;
     }

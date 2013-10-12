@@ -61,7 +61,6 @@ class FileParser
         $lastLogTime = $this->importStatus->getLastImportTime($logConfig->getLogtype());
         $lastLogTimeForThisRun = $lastLogTime;
         $logDir = $this->config->logDirectory;
-        echo $logDir.EOL;
         foreach (glob($logDir . DIRECTORY_SEPARATOR . $logConfig->getFilemask()) as $logFilename) {
             // Find last modified time of this log file
             $lastModified = new \DateTime();
@@ -107,7 +106,6 @@ class FileParser
                 $parsedData = $line->parse($buffer);
                 $key = $this->makeKeyFromParsedLine($buffer, $parsedData);
                 $this->writer->write($bucket, $key, $parsedData);
-                if ($i++>10) break;
             }
         }
         return $lastLogTimeRead;

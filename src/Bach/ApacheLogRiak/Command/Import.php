@@ -15,22 +15,26 @@
    limitations under the License.
 */
 
-namespace Bach\ApacheLogRiak\Store;
+namespace Bach\ApacheLogRiak\Command;
 
 
-class MemoryLogWriter implements LogWriter
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class Import extends Command
 {
 
-    private $data;
-
-    /**
-     * @param string $bucket
-     * @param string $key
-     * @param array $data
-     */
-    public function write($bucket, $key, $data)
+    protected function configure()
     {
-        $jsonData = json_encode($data, JSON_PRETTY_PRINT);
-        $this->data[$bucket][$key] = $jsonData;
+        $this->setName('log:import')
+             ->addArgument('configuration', InputArgument::REQUIRED, 'Location of the configuration file');
     }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        // TODO
+    }
+
 }
