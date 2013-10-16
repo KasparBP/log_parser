@@ -24,7 +24,7 @@ $jsmapfunc = JavascriptFunction::anon('function (v) {
 
 $jsredfunc = JavascriptFunction::anon('function (values) {
     var result = {};
-    if (values.length > 1) {
+    if (values.length > 0) {
         for (value in values) {
             for(var date in values[value]) {
                 var count = values[value][date];
