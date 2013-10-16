@@ -18,6 +18,9 @@
 namespace Bach\ApacheLogRiak\Command;
 
 
+use Bach\ApacheLogRiak\Config\Config;
+use Bach\ApacheLogRiak\FileParser;
+use Bach\ApacheLogRiak\Store\Factory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,7 +37,15 @@ class Import extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // TODO
+        $configFile = $input->getArgument('configuration');
+        $output->writeln('Running log parser');
+        $output->writeln("Reading configuration from $configFile");
+        $config = new Config();
+        $config->loadFromYaml($configFile);
+
+        $writers = Factory::createLogWriters($config);
+        $parser = new FileParser($config, $writers);
+        $parser->processLogs();
     }
 
 }

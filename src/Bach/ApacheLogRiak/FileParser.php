@@ -34,19 +34,19 @@ class FileParser
     private $importStatus;
 
     /**
-     * @var LogWriter
+     * @var LogWriter[]
      */
-    private $writer;
+    private $writers;
 
     /**
      * @param Config $config
-     * @param LogWriter $writer
+     * @param LogWriter[] $writers
      */
-    public function __construct($config, $writer)
+    public function __construct($config, $writers)
     {
         $this->config = $config;
         $this->importStatus = new ImportStatus($config);
-        $this->writer = $writer;
+        $this->writers = $writers;
     }
 
     public function processLogs()
@@ -59,8 +59,10 @@ class FileParser
     private function processLogGroup(SingleLogConfig $logConfig)
     {
         $lastLogTime = $this->importStatus->getLastImportTime($logConfig->getLogtype());
+        $logLineCount = $this->importStatus->getProcessedLineCount($logConfig->getLogtype());
         $lastLogTimeForThisRun = $lastLogTime;
         $logDir = $this->config->logDirectory;
+
         foreach (glob($logDir . DIRECTORY_SEPARATOR . $logConfig->getFilemask()) as $logFilename) {
             // Find last modified time of this log file
             $lastModified = new \DateTime();
@@ -73,7 +75,7 @@ class FileParser
             // Check if the file has been modified since last run
             if (is_null($lastLogTime) || $lastModified >= $lastLogTime) {
                 // Ok this log file has been modified since last run, now read it.
-                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig, $lastLogTime);
+                $logFileLastProcessed = $this->processSingleLogFile($logFilename, $logConfig, $lastLogTime, $logLineCount);
                 if (isset($logFileLastProcessed)) {
                     if (is_null($lastLogTimeForThisRun) || $logFileLastProcessed > $lastLogTimeForThisRun) {
                         $lastLogTimeForThisRun = $logFileLastProcessed;
@@ -83,6 +85,7 @@ class FileParser
         }
         // Save what date we got to in this run.
         $this->importStatus->setLastImportTime($logConfig->getLogtype(), $lastLogTimeForThisRun);
+        $this->importStatus->setProcessedLineCount($logConfig->getLogtype(), $logLineCount);
     }
 
     /**
@@ -90,22 +93,34 @@ class FileParser
      * @param $logFilename
      * @param SingleLogConfig $logConfig
      * @param \DateTime|null $lastLogTime
+     * @param $processedLineCount
      * @return \DateTime
      */
-    private function processSingleLogFile($logFilename, $logConfig, $lastLogTime)
+    private function processSingleLogFile($logFilename, $logConfig, $lastLogTime, &$processedLineCount)
     {
         $lastLogTimeRead = new \DateTime();
         $lastLogTimeRead->setTimestamp(0);
         $handle = @fopen($logFilename, "r");
-        $i = 0;
         if ($handle) {
             $lineFormat = $logConfig->getFormat();
             $bucket = $logConfig->getBucket();
             $line = new LineParser($lineFormat);
             while (($buffer = fgets($handle)) !== false) {
                 $parsedData = $line->parse($buffer);
-                $key = $this->makeKeyFromParsedLine($buffer, $parsedData);
-                $this->writer->write($bucket, $key, $parsedData);
+                if ($parsedData != null && is_array($parsedData)) {
+                    $date = $this->findFirstDateTime($parsedData);
+                    // Only save this log if it is never than last log time
+                    if ($lastLogTime < $date) {
+                        $key = $this->makeKeyFromParsedLine($buffer, $parsedData);
+                        foreach ($this->writers as $writer) {
+                            $writer->write($bucket, $key, $parsedData);
+                        }
+                        if ($lastLogTimeRead < $date) {
+                            $lastLogTimeRead = $date;
+                        }
+                        $processedLineCount++;
+                    }
+                }
             }
         }
         return $lastLogTimeRead;
@@ -136,6 +151,21 @@ class FileParser
             echo "Did not find any log time in records, using now for line: '$lineData''".PHP_EOL;
         }
         return "$stamp-$shortenedMd5";
+    }
+
+    /**
+     * @param array $parsedData
+     * @return null
+     * @return \DateTime|null
+     */
+    private function findFirstDateTime($parsedData)
+    {
+        foreach ($parsedData as $field) {
+            if ($field instanceof \DateTime) {
+                return $field;
+            }
+        }
+        return null;
     }
 
 }

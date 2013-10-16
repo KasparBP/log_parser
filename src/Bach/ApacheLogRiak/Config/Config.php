@@ -30,6 +30,8 @@ class Config
      */
     public $logs = array();
 
+    public $output = array();
+
     /**
      * @var string
      */
@@ -59,8 +61,6 @@ class Config
         foreach ($value['input']['logs'] as $log) {
             $this->logs[] = new SingleLogConfig($log);
         }
-        $this->riakHost = $value['riak']['host'];
-        $this->riakPort = intval($value['riak']['port']);
-
+        $this->output = $value['output'];
     }
 }

@@ -29,11 +29,18 @@ class RiakLogWriter implements LogWriter
     private $connection;
 
     /**
-     * @param Config $config
+     * @param string[] $riakConfig
+     * @throws \LogicException
      */
-    public function __construct($config)
+    public function __construct($riakConfig)
     {
-        $this->connection = new Connection($config->riakHost, $config->riakPort);
+        if (isset($riakConfig)) {
+            $host = $riakConfig['host'];
+            $port = $riakConfig['port'];
+            $this->connection = new Connection($host, $port);
+        } else {
+            throw new \LogicException("Trying to create a RiakLogWriter but no riak configuration found");
+        }
     }
 
     public function write($bucketName, $key, $data)

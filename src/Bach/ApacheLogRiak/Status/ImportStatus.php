@@ -47,7 +47,13 @@ class ImportStatus
     {
         if (isset($statusFileName) && file_exists($statusFileName)) {
             $statusJson = file_get_contents($statusFileName);
-            $this->status = json_decode($statusJson);
+            $statusArr = json_decode($statusJson, true);
+            foreach ($statusArr as $type => $currentStatus) {
+                $e = new Entry();
+                $e->latestImportTime = $currentStatus['latestImportTime'];
+                $e->totalLinesRead = $currentStatus['totalLinesRead'];
+                $this->status[$type] = $e;
+            }
         }
     }
 
@@ -70,6 +76,7 @@ class ImportStatus
     {
         if (!isset($this->status[$type])) {
             $entry = new Entry();
+            $this->status[$type] = $entry;
         } else {
             $entry = $this->status[$type];
         }
@@ -88,6 +95,17 @@ class ImportStatus
     }
 
     /**
+     * @param string $type
+     * @param $count
+     */
+    public function setProcessedLineCount($type, $count)
+    {
+        $entry = $this->getEntryFor($type);
+        $entry->totalLinesRead = $count;
+        $this->saveStatus($this->config->statusFile);
+    }
+
+    /**
      * @param $type
      * @return \DateTime|null
      */
@@ -95,5 +113,11 @@ class ImportStatus
     {
         $entry = $this->getEntryFor($type);
         return $entry->latestImportTime;
+    }
+
+    public function getProcessedLineCount($type)
+    {
+        $entry = $this->getEntryFor($type);
+        return $entry->totalLinesRead;
     }
 }

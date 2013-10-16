@@ -14,17 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace Bach\ApacheLogRiak;
+require 'vendor/autoload.php';
 
-use Bach\ApacheLogRiak\Store\MemoryLogWriter;
+use \Bach\ApacheLogRiak\Command\Import;
+use \Symfony\Component\Console\Application;
 
-class FileParserTest extends BaseTest
-{
-
-    public function testFullRead()
-    {
-        $reader = new FileParser($this->config, array(new MemoryLogWriter()));
-        $reader->processLogs();
-    }
-
-}
+$application = new Application();
+$application->add(new Import);
+$application->run();
